@@ -1,5 +1,7 @@
-// app.js
+// app.js (YANGILANGAN)
+
 const express = require('express');
+const cors = require('cors'); // <-- 1. QO'SHING
 require('dotenv').config();
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
@@ -9,10 +11,12 @@ const errorHandler = require('./middlewares/errorHandler');
 const app = express();
 
 // Middlewares
+app.use(cors()); // <-- 2. BARCHA MARSHRUTLARDAN OLDIN QO'SHING
 app.use(express.json());
 
 // Swagger sozlamalari
 const swaggerOptions = {
+    // ... sizning swagger sozlamalaringiz
     swaggerDefinition: {
         openapi: '3.0.0',
         info: {
@@ -22,12 +26,15 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: `http://localhost:${process.env.PORT || 3000}/api`,
-                description: 'Mahalliy server'
+                // BU YERNI HAM RENDER MANZILIGA O'ZGARTIRISHNI UNUTMANG
+                url: process.env.NODE_ENV === 'production' 
+                    ? 'https://your-app-name.onrender.com/api' // <-- Render manzilini yozing
+                    : `http://localhost:10000/api`, 
+                description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Mahalliy server'
             }
         ]
     },
-    apis: ['./routes/*.js'] // Marshrut fayllariga yo'l
+    apis: ['./routes/*.js']
 };
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
@@ -36,10 +43,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // Asosiy Marshrut
 app.use('/api', mainRouter);
 
-// Markazlashgan xatolik ishlovchisi (barcha marshrutlardan keyin chaqirilishi kerak)
+// Markazlashgan xatolik ishlovchisi
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3000;
+// Eslatma: Sizning portingiz 10000 ekanligini hisobga oldim
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log(`Server ${PORT}-portda ishlamoqda`);
 });
