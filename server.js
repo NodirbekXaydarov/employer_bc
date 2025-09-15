@@ -28,7 +28,7 @@ const swaggerOptions = {
             {
                 // BU YERNI HAM RENDER MANZILIGA O'ZGARTIRISHNI UNUTMANG
                 url: process.env.NODE_ENV === 'production' 
-                    ? 'https://your-app-name.onrender.com/api' // <-- Render manzilini yozing
+                    ? 'https://employer-bc.onrender.com/api-docs/' // <-- Render manzilini yozing
                     : `http://localhost:10000/api`, 
                 description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Mahalliy server'
             }
