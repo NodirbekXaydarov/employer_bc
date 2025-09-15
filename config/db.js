@@ -1,10 +1,19 @@
-const Pool = require('pg').Pool
-const pool = new Pool({
-    user:process.env.DB_USERNAME,
-    password:process.env.DB_PASSWORD,
-    database:process.env.DB_NAME,
-    host:process.env.DB_HOST,
-    port:process.env.DB_PORT
-})
+// config/db.js (YANGI VERSIYA)
+const { Pool } = require('pg');
+require('dotenv').config();
 
-module.exports = pool
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Production (Render) uchun DATABASE_URL'ni, aks holda .env faylidagi ma'lumotlarni ishlatamiz.
+const connectionString = isProduction 
+    ? process.env.DATABASE_URL 
+    : `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+
+const pool = new Pool({
+    connectionString: connectionString,
+    // Production muhitida SSL ulanishini majburiy yoqish
+    ssl: isProduction ? { rejectUnauthorized: false } : false
+});
+
+module.exports = pool;
+
